@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NeuroDriver — Autonomous Driving Research Platform</title>
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="css/dashboard.css">
+<link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    ⚡ NEURO<span>DRIVER</span>
+    <span class="sub">v2.5.0 Research Suite</span>
+  </div>
+  <div class="hdr-badges">
+    <div class="badge badge-live" id="api-status">● BACKEND SYNCED</div>
+    <div class="badge badge-ai">DQN + AEBS ENABLED</div>
+    <div class="badge badge-india">INDIA ROAD SAFETY PACK</div>
+  </div>
+</header>
+
+<div class="layout">
+
+  <!-- LEFT PANEL: CONFIG & CONTROLS -->
+  <div class="panel-left">
+
+    <div>
+      <div class="sec-title">Indian Road Scenario</div>
+      <div class="card">
+        <select id="scenario-sel" onchange="loadScenario(this.value)">
+          <option value="normal_highway">🛣 1. Normal Highway</option>
+          <option value="dense_urban">🚕 2. Dense Urban Traffic</option>
+          <option value="village_road">🚜 3. Village Road</option>
+          <option value="monsoon_rain">🌧 4. Monsoon Torrential Rain</option>
+          <option value="dense_fog">🌫 5. Dense Fog Highway</option>
+          <option value="night_driving">🌙 6. Night Driving</option>
+          <option value="wrong_side">⛔ 7. Wrong-Side Driver</option>
+          <option value="cattle_crossing">🐄 8. Stray Cattle Crossing</option>
+          <option value="pedestrian_dash">🚶 9. Sudden Pedestrian Dash</option>
+          <option value="pothole_avoidance">🕳 10. Pothole Avoidance</option>
+          <option value="emergency_vehicle">🚑 11. Ambulance Priority</option>
+          <option value="aggressive_overtaker">🚚 12. Aggressive Driver</option>
+        </select>
+        <button onclick="runScenarioBenchmark()" style="margin-top:4px">📊 Run 20-Run Benchmark</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="sec-title">Simulation Config</div>
+      <div class="card ctrl-row">
+        <div class="ctrl-item">
+          <span>Target Speed</span><span class="ctrl-val" id="speed-disp">60 km/h</span>
+        </div>
+        <input type="range" id="speed-sl" min="10" max="120" value="60"
+          oninput="targetSpeed=+this.value; document.getElementById('speed-disp').textContent=this.value+' km/h'">
+
+        <div class="ctrl-item" style="margin-top:6px">
+          <span>Traffic Density</span><span class="ctrl-val" id="density-disp">Medium</span>
+        </div>
+        <input type="range" id="density-sl" min="1" max="5" value="3"
+          oninput="setDensity(+this.value)">
+
+        <div class="ctrl-item" style="margin-top:6px"><span>Weather</span></div>
+        <select id="weather-sel" onchange="setWeather(this.value)">
+          <option value="clear">☀ Clear Day</option>
+          <option value="rain">🌧 Rain</option>
+          <option value="heavy_rain">⛈ Heavy Rain</option>
+          <option value="fog">🌫 Dense Fog</option>
+          <option value="night">🌙 Night</option>
+        </select>
+      </div>
+    </div>
+
+    <div>
+      <div class="sec-title">Driver Mode & Safety</div>
+      <div class="card ctrl-row">
+        <select id="driver-mode" onchange="setDriverMode(this.value)">
+          <option value="auto">🤖 Autonomous AI (DQN + AEBS)</option>
+          <option value="normal">🧑 Normal Human Driver</option>
+          <option value="drowsy">😴 Drowsy Driver</option>
+          <option value="distracted">📱 Distracted Driver</option>
+          <option value="rl">🧬 RL Agent (Active Learning)</option>
+        </select>
+      </div>
+    </div>
+
+    <div>
+      <div class="sec-title">Drowsiness Monitor</div>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted)">
+          <span>EAR Score (Eye Aspect Ratio)</span>
+          <span class="ctrl-val" id="ear-val">0.32</span>
+        </div>
+        <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin-top:6px">
+          <div id="drown-fill" style="height:100%;width:20%;background:var(--ok);transition:width 0.3s"></div>
+        </div>
+        <div style="font-size:10px;color:var(--muted);margin-top:5px;font-family:var(--font-mono)" id="drown-status">STATUS: ALERT</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="sec-title">Actions & Hazard Triggers</div>
+      <button onclick="resetSim()">↺ Reset Simulation</button>
+      <button onclick="triggerEmergency()" class="danger-btn" style="margin-top:6px">⚠ Force Emergency Brake</button>
+      <button onclick="spawnAnimal()" style="margin-top:6px">🐄 Spawn Animal on Road</button>
+      <button onclick="spawnWrongSide()" style="margin-top:6px">⟵ Wrong-Side Vehicle</button>
+    </div>
+
+  </div>
+
+  <!-- CENTER: CANVAS SIMULATION ENGINE -->
+  <div class="canvas-wrap">
+    <canvas id="sim"></canvas>
+
+    <div class="canvas-overlay">
+      <div class="hud-chip" id="hud-mode">MODE: AUTONOMOUS AI</div>
+      <div class="hud-chip" id="hud-speed">SPEED: 0 km/h</div>
+      <div class="hud-chip" id="hud-action">ACTION: CRUISE</div>
+      <div class="hud-chip" id="hud-weather">WEATHER: CLEAR</div>
+      <div class="hud-chip ok" id="hud-collision">SAFETY TIER: SAFE</div>
+    </div>
+
+    <canvas class="speed-ring" id="ring" width="100" height="100"></canvas>
+  </div>
+
+  <!-- RIGHT PANEL: METRICS & EXPLAINABLE AI -->
+  <div class="panel-right">
+
+    <div>
+      <div class="sec-title">Telemetry Metrics</div>
+      <div class="metrics-grid">
+        <div class="metric">
+          <div class="metric-val" id="m-speed">0</div>
+          <div class="metric-lbl">Speed km/h</div>
+        </div>
+        <div class="metric">
+          <div class="metric-val ok" id="m-score">100</div>
+          <div class="metric-lbl">Drive Score</div>
+        </div>
+        <div class="metric">
+          <div class="metric-val" id="m-dist">0.00</div>
+          <div class="metric-lbl">Distance km</div>
+        </div>
+        <div class="metric">
+          <div class="metric-val" id="m-risk">10</div>
+          <div class="metric-lbl">Risk Score</div>
+        </div>
+        <div class="metric">
+          <div class="metric-val danger" id="m-coll">0</div>
+          <div class="metric-lbl">Collisions</div>
+        </div>
+        <div class="metric">
+          <div class="metric-val warn" id="m-near">0</div>
+          <div class="metric-lbl">Near Misses</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="sec-title">Explainable AI (XAI)</div>
+      <div class="xai-panel" id="xai-card">
+        <div class="xai-title" id="xai-action">ACTION: CRUISE</div>
+        <div class="xai-reason" id="xai-reason">Maintaining target cruise speed on clear highway.</div>
+        <div class="xai-contributors" id="xai-contributors"></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="sec-title">Object Ranging & Detection</div>
+      <div class="card" id="det-list" style="font-size:11px;font-family:var(--font-mono)">
+        No objects detected
+      </div>
+    </div>
+
+    <div>
+      <div class="sec-title">AI Decision Event Log</div>
+      <div class="card" id="ai-log" style="font-size:10px;font-family:var(--font-mono);max-height:160px;overflow-y:auto"></div>
+    </div>
+
+  </div>
+
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/api/client.js"></script>
+<script src="js/simulation/engine.js"></script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+/* Header & Navigation */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 24px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(8px);
+}
+
+.logo {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo span.sub {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.hdr-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid;
+  letter-spacing: 0.5px;
+}
+.badge-live { color: var(--ok); border-color: var(--ok-glow); background: var(--ok-glow); }
+.badge-ai { color: var(--accent); border-color: var(--accent-glow); background: var(--accent-glow); }
+.badge-india { color: var(--warn); border-color: var(--warn-glow); background: var(--warn-glow); }
+
+/* Main Dashboard 3-Column Grid */
+.layout {
+  display: grid;
+  grid-template-columns: 280px 1fr 320px;
+  height: calc(100vh - 49px);
+  gap: 0;
+}
+
+/* Sidebar Panels */
+.panel-left, .panel-right {
+  background: var(--surface);
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.panel-left {
+  border-right: 1px solid var(--border);
+}
+
+.panel-right {
+  border-left: 1px solid var(--border);
+}
+
+/* Canvas Viewport */
+.canvas-wrap {
+  position: relative;
+  background: #05070a;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+canvas#sim {
+  display: block;
+  width: 100%;
+  height: 100%;
+}

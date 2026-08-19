@@ -1,0 +1,59 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --bg: #07090e;
+  --surface: #0e121b;
+  --surface2: #151a28;
+  --surface3: #1d2436;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-focus: rgba(0, 229, 255, 0.3);
+  
+  --accent: #00e5ff;
+  --accent-glow: rgba(0, 229, 255, 0.15);
+  --accent2: #7c4dff;
+  --danger: #ff4d6d;
+  --danger-glow: rgba(255, 77, 109, 0.15);
+  --warn: #ffd600;
+  --warn-glow: rgba(255, 214, 0, 0.15);
+  --ok: #00e676;
+  --ok-glow: rgba(0, 230, 118, 0.15);
+  
+  --text: #e8eaf6;
+  --muted: #8892b0;
+  --dim: #505a74;
+  
+  --font-mono: 'Space Mono', monospace;
+  --font-sans: 'DM Sans', sans-serif;
+  --glass: rgba(14, 18, 27, 0.75);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 2px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}

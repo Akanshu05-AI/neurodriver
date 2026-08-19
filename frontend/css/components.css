@@ -1,0 +1,188 @@
+/* Section Headers & Cards */
+.sec-title {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.sec-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Controls */
+.ctrl-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ctrl-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--muted);
+}
+.ctrl-val {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text);
+}
+
+input[type=range] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--border);
+  outline: none;
+  width: 100%;
+  cursor: pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+}
+
+select, button {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background: var(--surface3);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 4px;
+  padding: 6px 10px;
+  cursor: pointer;
+  width: 100%;
+  transition: all 0.2s;
+}
+select:hover, button:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+button.danger-btn {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+button.danger-btn:hover {
+  background: var(--danger-glow);
+}
+
+/* HUD Overlay */
+.canvas-overlay {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  pointer-events: none;
+}
+.hud-chip {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent);
+  background: var(--glass);
+  border: 1px solid var(--border);
+  padding: 5px 12px;
+  border-radius: 4px;
+  backdrop-filter: blur(8px);
+}
+.hud-chip.danger { color: var(--danger); border-color: var(--danger); background: var(--danger-glow); }
+.hud-chip.warn { color: var(--warn); border-color: var(--warn); background: var(--warn-glow); }
+.hud-chip.ok { color: var(--ok); border-color: var(--ok); background: var(--ok-glow); }
+
+/* Speedometer Ring */
+.speed-ring {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  width: 100px;
+  height: 100px;
+  pointer-events: none;
+}
+
+/* Metric Grid */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.metric {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px;
+  text-align: center;
+}
+.metric-val {
+  font-family: var(--font-mono);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--accent);
+}
+.metric-val.warn { color: var(--warn); }
+.metric-val.danger { color: var(--danger); }
+.metric-val.ok { color: var(--ok); }
+.metric-lbl {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 2px;
+  text-transform: uppercase;
+  font-family: var(--font-mono);
+}
+
+/* Explainable AI (XAI) Panel */
+.xai-panel {
+  background: var(--surface3);
+  border: 1px solid var(--border-focus);
+  border-radius: 6px;
+  padding: 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.4;
+}
+.xai-title {
+  color: var(--accent);
+  font-weight: 700;
+  margin-bottom: 4px;
+
+}
+.xai-reason {
+  color: var(--text);
+}
+.xai-contributors {
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.xai-chip {
+  font-size: 10px;
+  padding: 3px 6px;
+  border-radius: 3px;
+  background: rgba(255,255,255,0.03);
+  border-left: 2px solid var(--warn);
+}
