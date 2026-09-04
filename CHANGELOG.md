@@ -1,5 +1,13 @@
 # NeuroDriver — Version Changelog
 
+## [2.5.1] - 2026-09-04
+
+### ☁️ Cloud Deployment & Production Orchestration
+- **Render Backend Deployment Support**: Added `render.yaml` Blueprint and `Procfile` targeting production Gunicorn WSGI workers with `/health` checks.
+- **Vercel Frontend Deployment Support**: Added root and frontend `vercel.json` configurations with clean URL rewrites.
+- **Dynamic In-App API Connector**: Added interactive connection manager popup to `#api-status` badge with live latency probing, `localStorage` persistence, and URL query parameter (`?api=...`) auto-detection.
+- **Deployment Documentation**: Added comprehensive, step-by-step cloud deployment instructions to `README.md`.
+
 ## [2.5.0] - 2026-08-19
 
 ### 🚀 Major Architectural Refactoring & Upgrades

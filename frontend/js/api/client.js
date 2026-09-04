@@ -1,12 +1,59 @@
 /**
  * NeuroDriver API Client.
- * Handles backend REST requests (/api/decide, /api/scenarios) with automatic offline fallback.
+ * Handles backend REST requests (/api/decide, /api/scenarios, /health) with automatic offline fallback,
+ * dynamic base URL configuration, and live health probing.
  */
 
 class NeuroApiClient {
   constructor(baseUrl = window.NEURO_CONFIG.API_BASE_URL) {
-    this.baseUrl = baseUrl;
-    this.isOnline = true;
+    this.baseUrl = baseUrl.replace(/\/$/, '');
+    this.isOnline = false;
+    this.lastLatency = null;
+    this.onStatusChange = null;
+    
+    // Auto-probe health on boot
+    this.checkHealth();
+  }
+
+  setBaseUrl(newUrl) {
+    if (!newUrl) return;
+    this.baseUrl = newUrl.trim().replace(/\/$/, '');
+    try {
+      localStorage.setItem('neuro_api_base_url', this.baseUrl);
+    } catch(e) {}
+    window.NEURO_CONFIG.API_BASE_URL = this.baseUrl;
+    return this.checkHealth();
+  }
+
+  async checkHealth() {
+    const start = performance.now();
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3500);
+      const res = await fetch(`${this.baseUrl}/health`, {
+        signal: controller.signal,
+        headers: { "Accept": "application/json" }
+      });
+      clearTimeout(timeoutId);
+
+      if (res.ok) {
+        this.isOnline = true;
+        this.lastLatency = Math.round(performance.now() - start);
+        const data = await res.json();
+        if (typeof this.onStatusChange === 'function') {
+          this.onStatusChange(true, this.lastLatency, data);
+        }
+        return { online: true, latency: this.lastLatency, data };
+      }
+    } catch (err) {
+      // Failed to connect
+    }
+    this.isOnline = false;
+    this.lastLatency = null;
+    if (typeof this.onStatusChange === 'function') {
+      this.onStatusChange(false, null, null);
+    }
+    return { online: false, latency: null, data: null };
   }
 
   async makeRequest(endpoint, method = "GET", payload = null) {
@@ -18,7 +65,7 @@ class NeuroApiClient {
       if (payload) options.body = JSON.stringify(payload);
 
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 1200);
+      const timeoutId = setTimeout(() => controller.abort(), 2000);
       options.signal = controller.signal;
 
       const res = await fetch(`${this.baseUrl}${endpoint}`, options);
@@ -72,7 +119,7 @@ class NeuroApiClient {
       aebs_tier: riskLevel === "CRITICAL" ? "EMERGENCY" : "SAFE",
       xai_explanation: {
         selected_action: action,
-        primary_reason: "Client-side safety heuristic fallback",
+        primary_reason: "Client-side safety heuristic fallback (Render/Local backend offline)",
         q_value: 0.85
       },
       response_time_ms: 1.0

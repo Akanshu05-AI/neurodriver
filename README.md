@@ -109,3 +109,65 @@ python -m pytest -v
 - `tests/test_risk_engine.py`: Unified risk bounds & top contributor breakdown.
 - `tests/test_drowsiness.py`: EAR/PERCLOS fatigue state machine.
 - `tests/test_api.py`: Flask REST API route integration tests.
+
+---
+
+## 🚀 Cloud Deployment Guide (Vercel + Render)
+
+NeuroDriver is configured for a scalable cloud deployment:
+- **Backend (Python Flask REST API)** runs on **[Render](https://render.com)**.
+- **Frontend (Interactive Simulation & Research UI)** runs on **[Vercel](https://vercel.com)**.
+
+---
+
+### Step 1: Deploy Backend to Render
+
+1. Log in to [Render Dashboard](https://dashboard.render.com).
+2. Click **New +** → **Web Service** (or **Blueprint** using [`render.yaml`](file:///c:/Desktop/Projects/python%20projects/neurodriver/render.yaml)).
+3. Connect your GitHub repository: `https://github.com/Akanshu05-AI/neurodriver`.
+4. Configure the Web Service settings:
+   - **Name**: `neurodriver-backend`
+   - **Region**: Closest to your users (e.g., Singapore / Oregon / Frankfurt)
+   - **Runtime**: `Python 3`
+   - **Build Command**: `pip install -r requirements.txt`
+   - **Start Command**: `gunicorn -w 2 -b 0.0.0.0:$PORT backend.app:app`
+   - **Instance Type**: `Free`
+5. Click **Create Web Service**.
+6. Once deployed, copy your public service URL (e.g. `https://neurodriver-backend.onrender.com`).
+   - Verify health: `https://neurodriver-backend.onrender.com/health` returns `{"status": "ok"}`.
+
+> [!NOTE]
+> On Render's Free tier, services spin down after 15 minutes of inactivity. When a request is made after sleep, it takes ~30–50 seconds to cold start. The frontend includes automatic heuristic fallback and connection status alerts to seamlessly handle cold starts.
+
+---
+
+### Step 2: Deploy Frontend to Vercel
+
+1. Log in to [Vercel Dashboard](https://vercel.com).
+2. Click **Add New...** → **Project**.
+3. Select and import the `neurodriver` repository from GitHub.
+4. In **Configure Project**:
+   - **Framework Preset**: `Other`
+   - **Root Directory**: Leave as `./` (the pre-configured [`vercel.json`](file:///c:/Desktop/Projects/python%20projects/neurodriver/vercel.json) handles automatic rewrites to `frontend/`) OR select `frontend`.
+5. Click **Deploy**.
+6. Your simulation dashboard will be live at `https://<your-project-name>.vercel.app`!
+
+---
+
+### Step 3: Connect Frontend to Backend
+
+You have two convenient ways to connect your Vercel deployment to your Render backend:
+
+#### Method A: Interactive In-App Setting (No rebuild required)
+1. Open your deployed Vercel URL.
+2. Click the status badge in the top navigation bar: `● API CONNECTED` / `○ API OFFLINE`.
+3. Paste your Render URL (e.g., `https://neurodriver-backend.onrender.com`) into the input box.
+4. Click **🔍 Test Ping** to verify connectivity, then click **💾 Save & Connect**.
+   - Your choice is automatically saved in your browser's `localStorage`!
+
+#### Method B: Direct URL Parameter (Shareable links)
+Append `?api=<your-render-url>` to your Vercel link:
+```text
+https://neurodriver.vercel.app/?api=https://neurodriver-backend.onrender.com
+```
+The application will automatically detect, save, and connect to the backend on load.
